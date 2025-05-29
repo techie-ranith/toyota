@@ -135,20 +135,24 @@ export function PartsTable({ partsData, onEdit, loading, error }: PartsTableProp
         </TableBody>
         <TableFooter className="bg-blue-50">
           <TableRow>
-            <TableCell colSpan={4} className="text-blue-900 font-semibold">
+            <TableCell colSpan={5} className="text-blue-900 font-semibold">
               Total Parts
             </TableCell>
             <TableCell className="text-center text-blue-900 font-semibold">
               {filteredParts.length}
             </TableCell>
-            <TableCell className="text-right text-blue-900 font-semibold">
+            <TableCell colSpan={2}></TableCell> {/* Empty cells for alignment */}
+          </TableRow>
+          <TableRow>
+            <TableCell colSpan={4} className="text-right text-blue-900 font-semibold">
               Inventory Value
             </TableCell>
             <TableCell colSpan={2} className="text-right text-blue-900 font-semibold">
-              {inventoryValue.toLocaleString("en-US", { style: "currency", currency: "USD" })}
+              {inventoryValue.toLocaleString("en-US", { style: "currency", currency: "LKR" })}
             </TableCell>
           </TableRow>
         </TableFooter>
+
       </Table>
     </div>
   )
