@@ -20,7 +20,7 @@ class BaseController {
   async getAllItems(req, res) {
     try {
       // Extract query parameters from request
-      const { title, employmentType, modality, location } = req.query;
+      const { title, modality, location } = req.query;
 
       // Initialize query object
       const query = {};
@@ -30,17 +30,6 @@ class BaseController {
         .filter((term) => term) // Filter out undefined or empty values
         .map((term) => term.trim().replace(/\s+/g, " ")) // Normalize and trim each term
         .join("|"); // Combine terms with '|' to search for any of them
-
-      if (searchTerms) {
-        // Add combined regex search to the query
-        const regex = new RegExp(searchTerms, "i");
-        query.$or = [
-          { title: regex },
-          { employmentType: regex },
-          { modality: regex },
-          { location: regex },
-        ];
-      }
 
       // Fetch items from the database based on the query
       const items = await this.model.find(query);

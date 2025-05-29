@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const JobRoutes = require('./routes/JobRoutes');
+const VehiclePartRoutes = require('./routes/VehiclePartRoutes');
 
 
 dotenv.config();
@@ -12,7 +12,8 @@ const port = process.env.PORT || 3002;
 app.use(express.json());
 app.use(cors());
 
-app.use('/api/jobs', JobRoutes);
+// app.use('/api/jobs', JobRoutes);
+app.use('/api/vehicleparts', VehiclePartRoutes);
 
 
 mongoose.connect(process.env.MONGO_URI)
