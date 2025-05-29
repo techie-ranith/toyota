@@ -5,7 +5,7 @@ const vehiclePartSchema = new mongoose.Schema({
   partType: [{ type: String }],
   brand: { type: String },
   quantity: { type: Number },
-  price: { type: String },
+  price: { type: Number },
   status: [{
     type: String,
     enum: ["In Stock", "Out of Stock"],
