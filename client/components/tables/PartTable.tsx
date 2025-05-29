@@ -19,7 +19,7 @@ interface Part {
   partType: string[]
   brand: string
   quantity: number
-  price: string
+  price: number
   status: string[]
 }
 
@@ -65,7 +65,7 @@ export function PartsTable({ partsData, onEdit, loading, error }: PartsTableProp
   console.log("Filtered Parts:", filteredParts)
 
   const inventoryValue = filteredParts.reduce((sum, part) => {
-    const price = parseFloat(part.price.replace(/[^0-9.-]+/g, ""))
+    const price = part.price
     return sum + (isNaN(price) ? 0 : price * part.quantity)
   }, 0)
 
@@ -132,7 +132,7 @@ export function PartsTable({ partsData, onEdit, loading, error }: PartsTableProp
                 <TableCell className="text-blue-800">{part.partType?.join(', ')}</TableCell>
                 <TableCell className="text-blue-800">{part.brand}</TableCell>
                 <TableCell className="text-center text-blue-900">{part.quantity}</TableCell>
-                <TableCell className="text-right text-blue-900 font-medium">{part.price}</TableCell>
+                <TableCell className="text-right text-blue-900 font-medium"> Rs.{part.price}</TableCell>
                 <TableCell className="text-center">
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                     part.status?.[0] === "In Stock"
