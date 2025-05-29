@@ -14,9 +14,9 @@ export default function RootLayout({
 
   return (
     <SidebarProvider> {/* Wrap with SidebarProvider */}
-      <div className="flex">
+      <div className="flex items-start justify-start w-full h-screen">
         <AppSidebar className={!isOpen ? "hidden" : ""} />
-        <main className="flex items-center justify-center flex-1 overflow-auto">
+        <main className="flex items-center justify-center w-full border-2 overflow-auto">
           <div className="sticky top-0 z-10 lg:hidden">
             <Button
               variant="ghost"
