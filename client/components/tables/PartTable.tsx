@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,7 +18,7 @@ interface Part {
   name: string
   partType: string[]
   brand: string
-  quantityInStock: number
+  quantity: number
   price: string
   status: string[]
 }
@@ -35,23 +35,38 @@ export function PartsTable({ partsData, onEdit, loading, error }: PartsTableProp
   const [typeFilter, setTypeFilter] = useState<string>("All")
   const [statusFilter, setStatusFilter] = useState<string>("All")
 
+  // Debug: Check props
+  useEffect(() => {
+    console.log("Parts Data received:", partsData)
+    console.log("Loading:", loading)
+    console.log("Error:", error)
+  }, [partsData, loading, error])
+
   if (loading) return <div className="flex justify-center items-center h-64"><p>Loading...</p></div>
   if (error) return <p className="text-red-500 text-center mt-8">{error}</p>
 
-  // Extract unique types and statuses for dropdowns
+  if (!partsData || partsData.length === 0) {
+    return (
+      <div className="text-center text-blue-800 p-4">
+        No parts available to display.
+      </div>
+    )
+  }
+
   const allTypes = Array.from(new Set(partsData.flatMap(part => part.partType)))
   const allStatuses = Array.from(new Set(partsData.flatMap(part => part.status)))
 
-  // Filtered Data
   const filteredParts = partsData.filter(part => {
     const matchesType = typeFilter === "All" || part.partType.includes(typeFilter)
     const matchesStatus = statusFilter === "All" || part.status.includes(statusFilter)
     return matchesType && matchesStatus
   })
 
+  console.log("Filtered Parts:", filteredParts)
+
   const inventoryValue = filteredParts.reduce((sum, part) => {
     const price = parseFloat(part.price.replace(/[^0-9.-]+/g, ""))
-    return sum + (isNaN(price) ? 0 : price * part.quantityInStock)
+    return sum + (isNaN(price) ? 0 : price * part.quantity)
   }, 0)
 
   return (
@@ -103,35 +118,46 @@ export function PartsTable({ partsData, onEdit, loading, error }: PartsTableProp
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredParts.map((part) => (
-            <TableRow key={part._id} className="hover:bg-blue-50/50">
-              <TableCell className="font-medium text-blue-800">{part._id?.slice(-6)}</TableCell>
-              <TableCell className="text-blue-900">{part.name}</TableCell>
-              <TableCell className="text-blue-800">{part.partType?.join(', ')}</TableCell>
-              <TableCell className="text-blue-800">{part.brand}</TableCell>
-              <TableCell className="text-center text-blue-900">{part.quantityInStock}</TableCell>
-              <TableCell className="text-right text-blue-900 font-medium">{part.price}</TableCell>
-              <TableCell className="text-center">
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                  part.status?.[0] === "In Stock"
-                    ? "bg-blue-100 text-blue-800"
-                    : "bg-rose-100 text-rose-800"
-                }`}>
-                  {part.status?.[0]}
-                </span>
-              </TableCell>
-              <TableCell className="text-right">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onEdit(part)}
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
+          {filteredParts.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center text-blue-800 py-6">
+                No parts match the selected filters.
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            filteredParts.map((part) => (
+              <TableRow key={part._id} className="hover:bg-blue-50/50">
+                <TableCell className="font-medium text-blue-800">{part._id?.slice(-6)}</TableCell>
+                <TableCell className="text-blue-900">{part.name}</TableCell>
+                <TableCell className="text-blue-800">{part.partType?.join(', ')}</TableCell>
+                <TableCell className="text-blue-800">{part.brand}</TableCell>
+                <TableCell className="text-center text-blue-900">{part.quantity}</TableCell>
+                <TableCell className="text-right text-blue-900 font-medium">{part.price}</TableCell>
+                <TableCell className="text-center">
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                    part.status?.[0] === "In Stock"
+                      ? "bg-blue-100 text-blue-800"
+                      : "bg-rose-100 text-rose-800"
+                  }`}>
+                    {part.status?.[0]}
+                  </span>
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      console.log("Editing part:", part)
+                      onEdit(part)
+                    }}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
         <TableFooter className="bg-blue-50">
           <TableRow>
@@ -141,7 +167,7 @@ export function PartsTable({ partsData, onEdit, loading, error }: PartsTableProp
             <TableCell className="text-center text-blue-900 font-semibold">
               {filteredParts.length}
             </TableCell>
-            <TableCell colSpan={2}></TableCell> {/* Empty cells for alignment */}
+            <TableCell colSpan={2}></TableCell>
           </TableRow>
           <TableRow>
             <TableCell colSpan={4} className="text-right text-blue-900 font-semibold">
@@ -152,7 +178,6 @@ export function PartsTable({ partsData, onEdit, loading, error }: PartsTableProp
             </TableCell>
           </TableRow>
         </TableFooter>
-
       </Table>
     </div>
   )
