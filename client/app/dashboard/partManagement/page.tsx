@@ -9,6 +9,7 @@ import Form from '@/components/forms/baseform'
 const page = () => {
   return (
     <div>
+      <div className='text-xl'></div>
         <Form></Form>
         <Table></Table>
     </div>
