@@ -65,9 +65,11 @@ export function PartsTable({ partsData, onEdit, loading, error }: PartsTableProp
   console.log("Filtered Parts:", filteredParts)
 
   const inventoryValue = filteredParts.reduce((sum, part) => {
+    const isInStock = part.status?.includes("In Stock")
     const price = part.price
-    return sum + (isNaN(price) ? 0 : price * part.quantity)
+    return isInStock ? sum + (isNaN(price) ? 0 : price * part.quantity) : sum
   }, 0)
+  
 
   return (
     <div className="border rounded-lg overflow-hidden shadow-sm border-blue-100">
