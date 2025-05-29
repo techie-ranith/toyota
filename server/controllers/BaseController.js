@@ -19,26 +19,14 @@ class BaseController {
 
   async getAllItems(req, res) {
     try {
-      // Extract query parameters from request
-      const { title, modality, location } = req.query;
+      // Fetch all vehicle parts from the database
+      const items = await this.model.find()
 
-      // Initialize query object
-      const query = {};
-
-      // Combine all search terms into one
-      const searchTerms = [title, employmentType, modality, location]
-        .filter((term) => term) // Filter out undefined or empty values
-        .map((term) => term.trim().replace(/\s+/g, " ")) // Normalize and trim each term
-        .join("|"); // Combine terms with '|' to search for any of them
-
-      // Fetch items from the database based on the query
-      const items = await this.model.find(query);
-
-      // Send response with items
-      res.status(200).json({ items });
+      // Send response with the fetched items
+      res.status(200).json({ items })
     } catch (error) {
       // Handle any errors
-      this.handleErrors(res, error);
+      this.handleErrors(res, error)
     }
   }
 

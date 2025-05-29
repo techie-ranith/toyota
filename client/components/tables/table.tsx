@@ -1,5 +1,6 @@
-"use client"
-
+'use client'
+import { useEffect, useState } from "react"
+import axios from "axios"
 import {
   Table,
   TableBody,
@@ -11,76 +12,53 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-const partsData = [
-  {
-    id: "PART001",
-    name: "Brake Pads",
-    type: "Braking System",
-    brand: "Brembo",
-    quantity: 42,
-    price: "$89.99",
-    status: "In Stock",
-  },
-  {
-    id: "PART002",
-    name: "Oil Filter",
-    type: "Engine",
-    brand: "Mobil",
-    quantity: 68,
-    price: "$12.50",
-    status: "In Stock",
-  },
-  {
-    id: "PART003",
-    name: "Spark Plug",
-    type: "Ignition",
-    brand: "NGK",
-    quantity: 0,
-    price: "$8.75",
-    status: "Out of Stock",
-  },
-  {
-    id: "PART004",
-    name: "Air Filter",
-    type: "Intake",
-    brand: "K&N",
-    quantity: 15,
-    price: "$32.99",
-    status: "Low Stock",
-  },
-  {
-    id: "PART005",
-    name: "Headlight Assembly",
-    type: "Lighting",
-    brand: "Philips",
-    quantity: 7,
-    price: "$145.00",
-    status: "Low Stock",
-  },
-  {
-    id: "PART006",
-    name: "Battery",
-    type: "Electrical",
-    brand: "Optima",
-    quantity: 22,
-    price: "$199.99",
-    status: "In Stock",
-  },
-  {
-    id: "PART007",
-    name: "Tire Set (4)",
-    type: "Wheels & Tires",
-    brand: "Michelin",
-    quantity: 5,
-    price: "$720.00",
-    status: "Low Stock",
-  },
-]
+type Part = {
+  _id: string; // from MongoDB
+  name: string;
+  partType: string[];
+  brand: string;
+  quantity: number;
+  price: string;
+  status: string[]; // It's an array
+}
+
 
 export default function PartsInventoryTable() {
+  const [partsData, setPartsData] = useState<Part[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+
+useEffect(() => {
+  const fetchParts = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/vehicleparts");
+      console.log("API response:", res.data);
+
+      if (Array.isArray(res.data.items)) {
+        setPartsData(res.data.items);
+      } else {
+        console.error("Expected res.data.items to be an array");
+        setError("Invalid data format received from API");
+      }
+    } catch (err: any) {
+      console.error("Error fetching parts:", err);
+      setError("Failed to load parts data");
+    } finally {
+      setLoading(false); // ✅ Important
+    }
+  };
+
+  fetchParts();
+}, []);
+
+
+
   const totalParts = partsData.length
-  const inStockParts = partsData.filter(part => part.status === "In Stock").length
-  const outOfStockParts = partsData.filter(part => part.status === "Out of Stock").length
+  const inStockParts = partsData.filter(part => part.status.includes("In Stock")).length
+  const outOfStockParts = partsData.filter(part => part.status.includes("Out of Stock")).length
+
+  if (loading) return <p>Loading...</p>
+  if (error) return <p className="text-red-500">{error}</p>
 
   return (
     <Table className="w-1/2">
@@ -98,44 +76,59 @@ export default function PartsInventoryTable() {
       </TableHeader>
       <TableBody>
         {partsData.map((part) => (
-          <TableRow key={part.id}>
-            <TableCell className="font-medium">{part.id}</TableCell>
+          <TableRow key={part._id}>
+            <TableCell className="font-medium">{part._id}</TableCell>
             <TableCell>{part.name}</TableCell>
-            <TableCell>{part.type}</TableCell>
+            <TableCell>{part.partType?.join(', ')}</TableCell>
             <TableCell>{part.brand}</TableCell>
             <TableCell>{part.quantity}</TableCell>
             <TableCell className="text-right">{part.price}</TableCell>
             <TableCell>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                part.status === "In Stock" ? "bg-green-100 text-green-800" :
-                part.status === "Out of Stock" ? "bg-red-100 text-red-800" :
-                "bg-yellow-100 text-yellow-800"
+                part.status?.[0] === "In Stock"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
               }`}>
-                {part.status}
+                {part.status?.[0]}
               </span>
             </TableCell>
           </TableRow>
         ))}
-      </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={4}>Total Parts</TableCell>
-          <TableCell>{totalParts}</TableCell>
-          <TableCell className="text-right">In Stock</TableCell>
-          <TableCell>{inStockParts}</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell colSpan={4}>Inventory Value</TableCell>
-          <TableCell>
-            {partsData.reduce((sum, part) => {
-              const price = Number(part.price.replace(/[^0-9.-]+/g,""));
-              return sum + (price * part.quantity);
-            }, 0).toLocaleString('en-US', {style: 'currency', currency: 'USD'})}
-          </TableCell>
-          <TableCell className="text-right">Out of Stock</TableCell>
-          <TableCell>{outOfStockParts}</TableCell>
-        </TableRow>
-      </TableFooter>
+</TableBody>
+
+<TableFooter>
+  <TableRow>
+    <TableCell colSpan={4} className="text-left font-medium">
+      Total Parts
+    </TableCell>
+    <TableCell className="text-center font-semibold">
+      {totalParts}
+    </TableCell>
+    <TableCell className="text-right font-medium">In Stock</TableCell>
+    <TableCell className="text-center font-semibold">
+      {inStockParts}
+    </TableCell>
+  </TableRow>
+  <TableRow>
+    <TableCell colSpan={4} className="text-left font-medium">
+      Inventory Value
+    </TableCell>
+    <TableCell className="text-center font-semibold">
+      {partsData
+        .reduce((sum, part) => {
+          const price = parseFloat(part.price.replace(/[^0-9.-]+/g, ""));
+          return sum + (isNaN(price) ? 0 : price * part.quantity);
+        }, 0)
+        .toLocaleString("en-US", { style: "currency", currency: "USD" })}
+    </TableCell>
+    <TableCell className="text-right font-medium">Out of Stock</TableCell>
+    <TableCell className="text-center font-semibold">
+      {outOfStockParts}
+    </TableCell>
+  </TableRow>
+</TableFooter>
+        
+
     </Table>
   )
 }

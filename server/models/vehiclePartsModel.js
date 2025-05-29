@@ -2,11 +2,15 @@ const mongoose = require("mongoose");
 
 const vehiclePartSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  partNumber: { type: String, required: true },
-  manufacturer: { type: String },
-  category: { type: String },
-  price: { type: Number },
-  stock: { type: Number },
+  partType: [{ type: String }],
+  brand: { type: String },
+  quantity: { type: Number },
+  price: { type: String },
+  status: [{
+    type: String,
+    enum: ["In Stock", "Out of Stock"],
+    required: true,
+  }],
 });
 
 const VehiclePart = mongoose.model("VehiclePart", vehiclePartSchema);
