@@ -11,7 +11,7 @@ The **Vehicle and Part Management System** is a full-stack web application desig
 Make sure you have the following installed on your development machine:
 
 * Node.js (v16 or higher)
-* npm or yarn
+* npm
 * Git
 
 ---
@@ -20,8 +20,8 @@ Make sure you have the following installed on your development machine:
 
 ```
 vehicle-part-management-system/
-├── backend/           # Express.js API
-├── frontend/          # Next.js frontend
+├── server/           # Express.js API
+├── client/          # Next.js frontend
 ├── README.md          # Project documentation
 ```
 
@@ -31,24 +31,21 @@ vehicle-part-management-system/
 
 ### Setup Steps
 
-1. Navigate to the backend directory:
+1. Navigate to the server directory:
 
    ```bash
-   cd backend
+   cd server
    ```
 
 2. Install dependencies:
 
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
 3. Create a `.env` file in the backend root and configure your environment variables:
 
    ```env
-   PORT=5000
    MONGO_URI=your_mongodb_connection_string (get the mongo db string from github variables)
    ```
 
@@ -56,8 +53,6 @@ vehicle-part-management-system/
 
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
 
 5. The backend API will be available at `http://localhost:5000`
@@ -68,35 +63,25 @@ vehicle-part-management-system/
 
 ### Setup Steps
 
-1. Navigate to the frontend directory:
+1. Navigate to the client directory:
 
    ```bash
-   cd frontend
+   cd client
    ```
 
 2. Install dependencies:
 
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
-3. Create a `.env.local` file in the frontend root and configure API URL:
-
-   ```env
-   NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
-   ```
-
-4. Start the Next.js development server:
+3. Start the Next.js development server:
 
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
 
-5. Open your browser and visit `http://localhost:3000` to access the frontend UI.
+4. Open your browser and visit `http://localhost:3000` to access the frontend UI.
 
 ---
 
